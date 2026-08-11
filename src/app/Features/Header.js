@@ -11,13 +11,24 @@ export const Header = () => {
             <Movie /> Movie Z
           </div>
           <div className="flex justify-center items-center gap-3">
-            <Genre />
-            <input placeholder="Genre" className="w-24.25 h-9 rounded-lg" />
-            <Search />
-            <input 
-            type = "text"
-            placeholder="Search"
-             className="w-94.75 h-9 rounded-lg" />
+            <div className="relative flex justify-center items-center  ">
+              <input
+                placeholder="Genre"
+                className="w-[97px] h-9 rounded-md text-black bg-white  pl-8 pr-3 text-sm "
+              />
+              <span className="absolute left-2.5  text-xs text-gray-500">
+                <Genre />
+              </span>
+            </div>
+            <div className="relative flex justify-center items-center gap-10">
+              <input 
+              placeholder="Search..." 
+              className="w-[379px] h-[36px] rounded-lg pl-10 pr-3"
+              />
+              <span className="absolute left-2.5">
+                <Search/>
+              </span>
+            </div>
           </div>
           <span className="w-9 h-9 border rounded-md flex justify-center items-center">
             <Moon />
