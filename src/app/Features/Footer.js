@@ -4,7 +4,7 @@ import { Phone } from "../Icons/Phone";
 export const Footer = () => {
   return (
     <div className="w-full pt-12">
-      <div className="w-full  bg-blue-600 flex items-center justify-center pt-12 ">
+      <div className="w-full  bg-blue-600 flex items-center justify-center pt-10 ">
         <div className=" w-full max-w-[1280px]   flex justify-between">
           <div className="flex flex-col gap-3 text-white">
             <div className="flex gap-2">
