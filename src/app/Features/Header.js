@@ -2,13 +2,21 @@ import { Movie } from "../Icons/Movie";
 import { Genre } from "../Icons/Genre";
 import { Moon } from "../Icons/Moon";
 import { Search } from "../Icons/Search";
+import { useRouter } from "next/navigation";
+
 export const Header = () => {
+  
+  const router = useRouter()
+  const navigateToHome = () =>{
+    router.push("/")
+    
+  }
   return (
     <div>
       <div className="w-360 h-14.75 bg-white flex justify-center">
         <div className="w-7xl h-9 bg-white flex justify-between items-center">
-          <div className="flex gap-2">
-            <Movie /> Movie Z
+          <div className="flex gap-2" >
+            <Movie onClick={navigateToHome} /> Movie Z
           </div>
           <div className="flex justify-center items-center gap-3">
             <div className="relative flex justify-center items-center  ">

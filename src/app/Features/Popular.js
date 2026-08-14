@@ -43,6 +43,7 @@ export const Popular = () => {
                 <input
                   placeholder="See more"
                   className=" w-[100px] h-[28px]font-medium text-sm pr-6 bg-transparent focus:outline-none"
+                   style={{cursor: "pointer"}}
                 />
                 <span className="absolute right-2.5">
                   <ArrowRight />
