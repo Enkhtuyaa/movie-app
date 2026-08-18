@@ -15,7 +15,7 @@ export const Upcoming = () => {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dark, setDark] = useState(false);
+  // const [dark, setDark] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const getData = async () => {
