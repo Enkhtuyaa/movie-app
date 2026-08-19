@@ -20,7 +20,7 @@ export default function Detail() {
   const params = useParams();
   const [genre, setGenre] = useState("");
   const [credit, setCredit] = useState("");
-  const [similarMovie, setSimilarMovie] = useState(null);
+  const [similarMovie, setSimilarMovie] = useState([]);
 
   // console.log("this is the param", params);
 
@@ -30,17 +30,20 @@ export default function Detail() {
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
+
     return jsonData;
   };
 
   const getGenres = async () => {
     const response = await fetch(
-      `https://api.themoviedb.org/3/discover/movie?language=en&with_genres=${params.id}&page=${page}`,
+      `https://api.themoviedb.org/3/discover/movie?language=en&with_genres=${params.id}?&page=${page}}`,
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
+    //  console.log(jsonData, "jsonData")
     return jsonData;
   };
+  // console.log(getGenres, "jsonData")
 
   const getCredit = async () => {
     const response = await fetch(
@@ -48,6 +51,7 @@ export default function Detail() {
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
+
     return jsonData;
   };
   const getSimilar = async () => {
@@ -56,9 +60,10 @@ export default function Detail() {
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
-    return jsonData;
+
+    return jsonData.results;
   };
-  
+
   useEffect(() => {
     getData()
       .then((movie) => Setmovie(movie))
@@ -88,14 +93,15 @@ export default function Detail() {
 
   useEffect(() => {
     getSimilar()
-      .then((data) => setSimilarMovie(data))
+      .then((data) => setSimilarMovie(data || []))
       .catch(() => setErrorMessage("MOVIE API ERROR"))
       .finally(() => {
         setLoading(false);
       });
-  });
+  }, [params.id]);
+  console.log(similarMovie, "similarMovie");
   // console.log(credit, "credit");
-  console.log(credit);
+  // console.log(genre, "genre");
   const router = useRouter();
   const navigateToUpcomingPage = () => {
     router.push("/");
@@ -109,13 +115,14 @@ export default function Detail() {
         {!loading && errorMessage && data.map((movie))} */}
         <div className="w-[1080px] h-[72px] flex justify-between">
           <div>
-            <p className="font-bold text-4xl">{movie?.title}</p>
+            <p className="font-bold text-4xl">{movie?.title || "Wicked"}</p>
             <p className=" font-normal text-lg ">
-              {movie?.release_date} {movie?.runtime}min
+              {movie?.release_date ?? "2024.11.26"}
+              {movie?.runtime || "2h40"}min
             </p>
           </div>
-          <div className="flex flex-col">
-            <p className="font-medium text-xs ">Rating</p>
+          <div className="flex flex-col text-center">
+            <p className="font-medium text-xs  ">Rating</p>
             <div className="flex ">
               <span>
                 {" "}
@@ -124,28 +131,37 @@ export default function Detail() {
               <div className="flex flex-col">
                 <div className="flex  ">
                   <p className=" font-normal text-base ">
-                    {movie?.vote_average}
+                    {Math.floor(movie?.vote_average) || "6.9"}
                   </p>
                   <span className=" font-normal text-base text-gray-400">
                     /10
                   </span>
                 </div>
-                <div className="font-normal text-xs text-gray-400">37k</div>
+                <div className="font-normal text-xs text-gray-400">
+                  {Math.floor(movie?.popularity) || "37k"}
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div className="w-[1080px] h-[428px] flex gap-8">
           <div className="w-[290px] h-[428px]">
-            {/* <MoviePoster /> */}{" "}
+            {" "}
             <img
-              src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
+              src={
+                `https://image.tmdb.org/t/p/original/${movie?.poster_path}` || (
+                  <MoviePoster />
+                )
+              }
             />
           </div>
           <div className="w-[760px] h-[428px]">
-            {/* <WickedLogo /> */}
             <img
-              src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
+              src={
+                `https://image.tmdb.org/t/p/original/${movie?.poster_path}` || (
+                  <WickedLogo />
+                )
+              }
               className="w-[760px] h-[428px] "
             />
           </div>
@@ -154,10 +170,10 @@ export default function Detail() {
           <div className="flex gap-3">
             {movie?.genre?.map((genre) => {
               return (
-                <div key={genre.id} className="font-medium  text-lg">
+                <div key={genre?.id} className="font-medium  text-lg">
                   <span className="w-[77px] h-[20px] rounded-full font-semibold text-xs">
                     {/* Fairy Tale {movie?.genres} */}
-                    {genre.name}
+                    {genre?.name}
                   </span>
                   <span className="w-[91px] h-[20px] rounded-full font-semibold text-xs">
                     {/* Pop Musical */}
@@ -231,93 +247,41 @@ export default function Detail() {
           </div>
         </div>
         <div className="w-[1080px] h-[372px] flex gap-8 rounded-lg">
-          <div className="w-[190px] h-[372px] rounded-lg ">
-            <div>
-              <First1 />
-            </div>
-            <div>
-              <div className="flex items-center">
-                <span>
-                  <Star />
-                </span>
-                <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
-                  <span className=" font-normal text-base text-gray-400">
-                    /10
-                  </span>
-                </div>
+          {similarMovie?.slice(0, 5).map((movie) => (
+            <div key={movie.id} className="w-[190px] h-[372px] rounded-lg ">
+              <div>
+                {movie.poster_path ? (
+                  <img
+                    src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
+                    alt={movie.title}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <MoviePoster />
+                )}
+                {/* <First1 /> */}
               </div>
-              <p className="font-normal text-lg">Gladiator II </p>
-            </div>
-          </div>
-          <div className="w-[190px] h-[372px]">
-            <div></div>
-            <div>
-              <div className="flex items-center">
-                <span>
-                  <Star />
-                </span>
-                <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
-                  <span className=" font-normal text-base text-gray-400">
-                    /10
+              <div>
+                <div className="flex items-center">
+                  <span>
+                    <Star />
                   </span>
+                  <div className="flex  ">
+                    <p className=" font-normal text-base ">
+                      {Math.floor(movie?.vote_average) || "6.9"}
+                    </p>
+                    <span className=" font-normal text-base text-gray-400">
+                      /10
+                    </span>
+                  </div>
                 </div>
+                <p className="font-normal text-lg">
+                  {movie.title || "Gladiator II"}
+                </p>
               </div>
-              <p className="font-normal text-lg">Gladiator II </p>
             </div>
-          </div>
-          <div className="w-[190px] h-[372px]">
-            <div></div>
-            <div>
-              <div className="flex items-center">
-                <span>
-                  <Star />
-                </span>
-                <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
-                  <span className=" font-normal text-base text-gray-400">
-                    /10
-                  </span>
-                </div>
-              </div>
-              <p className="font-normal text-lg">Gladiator II </p>
-            </div>
-          </div>
-          <div className="w-[190px] h-[372px]">
-            <div></div>
-            <div>
-              <div className="flex items-center">
-                <span>
-                  <Star />
-                </span>
-                <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
-                  <span className=" font-normal text-base text-gray-400">
-                    /10
-                  </span>
-                </div>
-              </div>
-              <p className="font-normal text-lg">Gladiator II </p>
-            </div>
-          </div>
-          <div className="w-[190px] h-[372px]">
-            <div></div>
-            <div>
-              <div className="flex items-center">
-                <span>
-                  <Star />
-                </span>
-                <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
-                  <span className=" font-normal text-base text-gray-400">
-                    /10
-                  </span>
-                </div>
-              </div>
-              <p className="font-normal text-lg">Gladiator II </p>
-            </div>
-          </div>
+          ))}
+           
         </div>
       </div>
       <Footer />
