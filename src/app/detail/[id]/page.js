@@ -14,34 +14,92 @@ const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
 
 export default function Detail() {
-  const [movie, Setmovie] = useState([]);
+  const [movie, Setmovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const params = useParams();
+  const [genre, setGenre] = useState("");
+  const [credit, setCredit] = useState("");
+  const [similarMovie, setSimilarMovie] = useState(null);
 
   // console.log("this is the param", params);
 
   const getData = async () => {
     const response = await fetch(
-      "https://api.themoviedb.org/3/movie/${movieId}?language=en-US",
+      `https://api.themoviedb.org/3/movie/${params.id}?language=en-US`,
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
-console.log(response)
-    // const jsonData = await response.json();
-    // return jsonData.results;
+    const jsonData = await response.json();
+    return jsonData;
   };
-  // useEffect(() => {
-  //   getData()
-  //     .then((data) => setData(data))
-  //     .catch(() => setErrorMessage("MOVIE API ERROR"))
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, []);
-  // const router = useRouter();
-  // const navigateToUpcomingPage = () => {
-  //   router.push("/");
-  // };
+
+  const getGenres = async () => {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?language=en&with_genres=${params.id}&page=${page}`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    return jsonData;
+  };
+
+  const getCredit = async () => {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${params.id}/credits?language=en-US`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    return jsonData;
+  };
+  const getSimilar = async () => {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${params.id}/similar?language=en-US&page=1`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    return jsonData;
+  };
+  
+  useEffect(() => {
+    getData()
+      .then((movie) => Setmovie(movie))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    getGenres()
+      .then((genre) => setGenre(genre))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    getCredit()
+      .then((credit) => setCredit(credit))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    getSimilar()
+      .then((data) => setSimilarMovie(data))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  });
+  // console.log(credit, "credit");
+  console.log(credit);
+  const router = useRouter();
+  const navigateToUpcomingPage = () => {
+    router.push("/");
+  };
   return (
     <div>
       <Header />
@@ -51,8 +109,10 @@ console.log(response)
         {!loading && errorMessage && data.map((movie))} */}
         <div className="w-[1080px] h-[72px] flex justify-between">
           <div>
-            <p className="font-bold text-4xl">Wicked</p>
-            <p className=" font-normal text-lg ">2024.11.26 PG 2h40min</p>
+            <p className="font-bold text-4xl">{movie?.title}</p>
+            <p className=" font-normal text-lg ">
+              {movie?.release_date} {movie?.runtime}min
+            </p>
           </div>
           <div className="flex flex-col">
             <p className="font-medium text-xs ">Rating</p>
@@ -63,7 +123,9 @@ console.log(response)
               </span>
               <div className="flex flex-col">
                 <div className="flex  ">
-                  <p className=" font-normal text-base ">6.9</p>
+                  <p className=" font-normal text-base ">
+                    {movie?.vote_average}
+                  </p>
                   <span className=" font-normal text-base text-gray-400">
                     /10
                   </span>
@@ -75,50 +137,82 @@ console.log(response)
         </div>
         <div className="w-[1080px] h-[428px] flex gap-8">
           <div className="w-[290px] h-[428px]">
-            <MoviePoster />
+            {/* <MoviePoster /> */}{" "}
+            <img
+              src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
+            />
           </div>
           <div className="w-[760px] h-[428px]">
-            <WickedLogo />
+            {/* <WickedLogo /> */}
+            <img
+              src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
+              className="w-[760px] h-[428px] "
+            />
           </div>
         </div>
         <div className="w-[1080px] h-[271px] pt-8  pb-8 flex  flex-col gap-5">
           <div className="flex gap-3">
-            <span className="w-[77px] h-[20px] rounded-full font-semibold text-xs">
-              Fairy Tale
-            </span>
-            <span className="w-[91px] h-[20px] rounded-full font-semibold text-xs">
-              Pop Musical
-            </span>
-            <span className="w-[67px] h-[20px] rounded-full font-semibold text-xs">
-              Fantasy
-            </span>
-            <span className="w-[65px] h-[20px] rounded-full font-semibold text-xs">
-              Musical
-            </span>
-            <span className="w-[75px] h-[20px] rounded-full font-semibold text-xs">
-              Romance
-            </span>
+            {movie?.genre?.map((genre) => {
+              return (
+                <div key={genre.id} className="font-medium  text-lg">
+                  <span className="w-[77px] h-[20px] rounded-full font-semibold text-xs">
+                    {/* Fairy Tale {movie?.genres} */}
+                    {genre.name}
+                  </span>
+                  <span className="w-[91px] h-[20px] rounded-full font-semibold text-xs">
+                    {/* Pop Musical */}
+                  </span>
+                  <span className="w-[67px] h-[20px] rounded-full font-semibold text-xs">
+                    {/* Fantasy */}
+                  </span>
+                  <span className="w-[65px] h-[20px] rounded-full font-semibold text-xs">
+                    {/* Musical */}
+                  </span>
+                  <span className="w-[75px] h-[20px] rounded-full font-semibold text-xs">
+                    {/* Romance */}
+                  </span>
+                </div>
+              );
+            })}
           </div>
           <span className=" font-normal text-base w-[1080px] h-[48px]">
-            Elphaba, a misunderstood young woman because of her green skin, and
+            {/* Elphaba, a misunderstood young woman because of her green skin, and
             Glinda, a popular girl, become friends at Shiz University in the
             Land of Oz. After an encounter with the Wonderful Wizard of Oz,
-            their friendship reaches a crossroads.
+            their friendship reaches a crossroads. */}
+            <p className="font-normal text-sm"> {movie?.overview}</p>
           </span>
+
           <div className=" flex  w-[1080px] h-[41px] gap-13">
             <p className="font-bold text-base">Director</p>
-            <p className="font-normal text-base">Jon M. Chu</p>
+            <p className="font-normal text-sm">
+              {credit.crew
+                ?.filter((item) => item.department === "Directing")
+                .map((item) => item.name)}
+            </p>
           </div>
           <div className="flex  w-[1080px] h-[41px] gap-13">
             <p className="font-bold text-base">Writers</p>
-            <p className="font-normal text-base">
+            {/* <p className="font-normal text-base">
               Winnie Holzman · Dana Fox · Gregory Maguire
+            </p> */}
+            <p className="font-normal text-base">
+              {" "}
+              {credit.crew
+                ?.filter((item) => item.known_for_department === "Writing")
+                .map((item) => item.name)}
             </p>
           </div>
           <div className="flex  w-[1080px] h-[41px] gap-13">
             <p className="font-bold text-base">Stars</p>
-            <p className="font-normal text-base">
+            {/* <p className="font-normal text-base">
               Cynthia Erivo · Ariana Grande · Jeff Goldblum
+            </p> */}
+            <p className="font-normal text-base">
+              {credit.cast
+                ?.slice(0, 3)
+                .filter((item) => item.known_for_department === "Acting")
+                .map((item) => item.name)}
             </p>
           </div>
         </div>
