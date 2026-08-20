@@ -118,13 +118,13 @@ export default function Detail() {
       .finally(() => {
         setLoading(false);
       });
-  }, [params.id]);
+  }, []);
   // console.log(similarMovie, "similarMovie");
   // console.log(credit, "credit");
   // console.log(genre, "genre");
   const router = useRouter();
-  const navigateToUpcomingPage = () => {
-    router.push("/");
+  const navigateToMovieDetailPage = () => {
+    router.push("/detail/${movie.id}/moviedetail");
   };
   return (
     <div>
@@ -137,7 +137,7 @@ export default function Detail() {
           <div>
             <p className="font-bold text-4xl">{movie?.title || "Wicked"}</p>
             <p className=" font-normal text-lg ">
-              {movie?.release_date ?? "2024.11.26"}
+              {movie?.release_date || "2024.11.26"}
               {movie?.runtime || "2h40"}min
             </p>
           </div>
@@ -268,6 +268,7 @@ export default function Detail() {
               placeholder="See more"
               className=" w-[100px] h-[28px]font-medium text-sm pr-6 bg-transparent focus:outline-none"
               style={{ cursor: "pointer" }}
+              onClick={navigateToMovieDetailPage}
             />
             <span className="absolute right-2.5">
               <ArrowRight />
