@@ -9,6 +9,7 @@ import { Star } from "@/app/Icons/Star";
 import { MoviePoster } from "@/app/Icons/MoviePoster";
 import { WickedLogo } from "@/app/Icons/WickedLogo";
 import { ArrowRight } from "@/app/Icons/ArrowRight";
+import { Vector } from "@/app/Icons/Vector";
 
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
@@ -21,6 +22,7 @@ export default function Detail() {
   const [genre, setGenre] = useState("");
   const [credit, setCredit] = useState("");
   const [similarMovie, setSimilarMovie] = useState([]);
+  const [video, setVideo] = useState(false);
 
   // console.log("this is the param", params);
 
@@ -64,6 +66,24 @@ export default function Detail() {
     return jsonData.results;
   };
 
+  const getVideo = async () => {
+    const response = await fetch(
+      ` https://api.themoviedb.org/3/movie/${params.id}/videos?language=en-US`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    //  console.log(jsonData, "video");
+    return jsonData.results;
+  };
+  useEffect(() => {
+    getVideo()
+      .then((data) => setVideo(data))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+  // console.log(video, "video")
   useEffect(() => {
     getData()
       .then((movie) => Setmovie(movie))
@@ -99,7 +119,7 @@ export default function Detail() {
         setLoading(false);
       });
   }, [params.id]);
-  console.log(similarMovie, "similarMovie");
+  // console.log(similarMovie, "similarMovie");
   // console.log(credit, "credit");
   // console.log(genre, "genre");
   const router = useRouter();
@@ -145,25 +165,33 @@ export default function Detail() {
           </div>
         </div>
         <div className="w-[1080px] h-[428px] flex gap-8">
-          <div className="w-[290px] h-[428px]">
+          <div className="w-[290px] h-[428px] rounded-lg">
             {" "}
             <img
-              src={
-                `https://image.tmdb.org/t/p/original/${movie?.poster_path}` || (
-                  <MoviePoster />
-                )
-              }
+              src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
+              className="object-cover rounded-lg"
             />
           </div>
-          <div className="w-[760px] h-[428px]">
+          <div className="w-[760px] h-[428px] object-cover relative flex justify-between gap-2">
             <img
-              src={
-                `https://image.tmdb.org/t/p/original/${movie?.poster_path}` || (
-                  <WickedLogo />
-                )
-              }
-              className="w-[760px] h-[428px] "
+              src={`https://image.tmdb.org/t/p/original/${movie?.backdrop_path}`}
+              className="  rounded-lg"
             />
+            <div className=" flex absolute bottom-10  w-[650px] justify-between left-15 ">
+              <button className=" flex gap-3 items-center cursor-pointer
+               " onClick={()=>setVideo(true)}>
+                <span className="left-2.5 flex items-center justify-center w-[40px] h-[40px] bg-white rounded-full  ">
+                  <Vector />
+                </span>
+                <p className="font-normal text-lg text-white"> Play trailer</p>
+              </button>
+              <button className="flex  gap-3 items-center cursor-pointer ">
+                <span className="left-2.5 flex items-center justify-center w-[40px] h-[40px] bg-white rounded-full  ">
+                  <Vector />
+                </span>
+                <p className="font-normal text-lg text-white"> Watch Now </p>
+              </button>
+            </div>
           </div>
         </div>
         <div className="w-[1080px] h-[271px] pt-8  pb-8 flex  flex-col gap-5">
@@ -250,16 +278,14 @@ export default function Detail() {
           {similarMovie?.slice(0, 5).map((movie) => (
             <div key={movie.id} className="w-[190px] h-[372px] rounded-lg ">
               <div>
-                {movie.poster_path ? (
-                  <img
-                    src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
-                    alt={movie.title}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <MoviePoster />
-                )}
+                <img
+                  src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
+                  alt={movie.title}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+
                 {/* <First1 /> */}
+                {/* { <MoviePoster />} */}
               </div>
               <div>
                 <div className="flex items-center">
