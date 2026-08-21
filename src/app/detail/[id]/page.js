@@ -124,7 +124,7 @@ export default function Detail() {
   // console.log(genre, "genre");
   const router = useRouter();
   const navigateToMovieDetailPage = () => {
-    router.push("/detail/${movie.id}/moviedetail");
+    router.push(`/detail/${params.id}/moviedetail`);
   };
   return (
     <div>
@@ -178,8 +178,11 @@ export default function Detail() {
               className="  rounded-lg"
             />
             <div className=" flex absolute bottom-10  w-[650px] justify-between left-15 ">
-              <button className=" flex gap-3 items-center cursor-pointer
-               " onClick={()=>setVideo(true)}>
+              <button
+                className=" flex gap-3 items-center cursor-pointer
+               "
+                onClick={() => setVideo(true)}
+              >
                 <span className="left-2.5 flex items-center justify-center w-[40px] h-[40px] bg-white rounded-full  ">
                   <Vector />
                 </span>
@@ -264,12 +267,13 @@ export default function Detail() {
           <div className="text-2xl font-semibold">More like this</div>
 
           <div className="relative flex items-center ">
-            <input
-              placeholder="See more"
+            <button
               className=" w-[100px] h-[28px]font-medium text-sm pr-6 bg-transparent focus:outline-none"
               style={{ cursor: "pointer" }}
               onClick={navigateToMovieDetailPage}
-            />
+            >
+              See more
+            </button>
             <span className="absolute right-2.5">
               <ArrowRight />
             </span>

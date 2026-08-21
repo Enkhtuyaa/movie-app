@@ -35,27 +35,16 @@ export default function MovieDetailPage() {
   return (
     <div>
       <Header />
-      <div className=" w-[1440px] h-[1050px] flex justify-center  ">
-        <div className=" w-[1080px] h-[36px] pt-13 pl-20">
-        <p className="text-2xl font-semibold">  More like this</p>
-        
+      <div className=" w-full min-h-[1050px] flex flex-wrap justify-center ">
+        <div className=" w-[1080px] h-[36px] pt-13">
+          <p className="text-2xl font-semibold"> More like this</p>
         </div>
-
-        {/* <div className="relative flex items-center ">
-            <input
-              placeholder="See more"
-              className=" w-[100px] h-[28px]font-medium text-sm pr-6 bg-transparent focus:outline-none"
-              style={{ cursor: "pointer" }}
-              // onClick={navigateToMovieDetailPage}
-            />
-            <span className="absolute right-2.5">
-              <ArrowRight />
-            </span>
-          </div> */}
-
-        <div className="w-[1080px] h-[372px] flex flex-wrap gap-8 rounded-lg">
+        <div className=" min-w-[1280px] min-h-[910px] flex flex-wrap gap-8 rounded-lg pt-13  pl-10 pr-10 justify-center ">
           {similarMovie?.slice(0, 20).map((movie) => (
-            <div key={movie.id} className="w-[190px] h-[372px] rounded-lg ">
+            <div
+              key={movie.id}
+              className="w-[229px] h-[439px] rounded-lg flex flex-col "
+            >
               <div>
                 <img
                   src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
@@ -66,12 +55,12 @@ export default function MovieDetailPage() {
                 {/* <First1 /> */}
                 {/* { <MoviePoster />} */}
               </div>
-              <div>
-                <div className="flex items-center">
+              <div className="bg-gray-500 w-[229px] h-[85px] gap-4  flex   p-4  rounded-lg ">
+                <div className="flex   items-center ">
                   <span>
                     <Star />
                   </span>
-                  <div className="flex  ">
+                  <div className="flex justify-center items-center ">
                     <p className=" font-normal text-base ">
                       {Math.floor(movie?.vote_average) || "6.9"}
                     </p>
@@ -80,9 +69,12 @@ export default function MovieDetailPage() {
                     </span>
                   </div>
                 </div>
-                <p className="font-normal text-lg">
-                  {movie.title || "Gladiator II"}
-                </p>
+               
+                <div className=" flex justify-center items-center">
+                  <p className="font-normal text-sm">
+                    {movie.title || "Gladiator II"}
+                  </p>
+                </div>
               </div>
             </div>
           ))}

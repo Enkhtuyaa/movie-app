@@ -51,12 +51,13 @@ export const Popular = () => {
               <span className=" font-semibold text-2xl">Popular</span>
               {pathname !== "/popular" && (
                 <div className="relative flex items-center px-4">
-                  <input
-                    placeholder="See more"
-                    className=" w-[100px] h-[28px]font-medium text-sm pr-6 bg-transparent focus:outline-none"
+                  <button
+                    className=" w-[100px] h-[28px] font-medium text-sm pr-6 bg-transparent focus:outline-none"
                     style={{ cursor: "pointer" }}
-                    onClick={navigateToPopularPage}
-                  />
+                    onClick={navigateToPopularPage} >
+                    See more
+                  </button>
+
                   <span className="absolute right-2.5">
                     <ArrowRight />
                   </span>
