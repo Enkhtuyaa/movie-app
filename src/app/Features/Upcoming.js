@@ -17,6 +17,7 @@ export const Upcoming = () => {
   const [loading, setLoading] = useState(true);
   // const [dark, setDark] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+   const [selectedPage, setSelectedPage] = useState(1);
 
   const getData = async () => {
     const response = await fetch(
@@ -36,6 +37,7 @@ export const Upcoming = () => {
       });
   }, []);
   // console.log(data, "this is my data");
+
   const router = useRouter();
   const navigateToUpcomingPage = () => {
     router.push("/upcoming");
@@ -112,6 +114,7 @@ export const Upcoming = () => {
           </div>
         </div>
       </div>
+    
     </div>
   );
 };

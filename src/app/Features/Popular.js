@@ -34,6 +34,7 @@ export const Popular = () => {
       });
   }, []);
   console.log(data, "this is my data");
+  
   const router = useRouter();
   const navigateToPopularPage = () => {
     router.push("/popular");

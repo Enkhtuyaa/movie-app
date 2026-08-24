@@ -12,10 +12,11 @@ export const Hero = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [trailerKey, setTrailerKey] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPage, setSelectedPage] = useState(1);
 
   const getData = async () => {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1`,
+      `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=${selectedPage}`,
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
@@ -53,12 +54,20 @@ export const Hero = () => {
       });
   }, []);
 
+  const handlePreviousButton = () => {
+    const page = selectedPage === 1 ? 1 : selectedPage - 1;
+    setSelectedPage(page);
+  };
+  const handleNextButton = () => {
+    setSelectedPage(selectedPage + 1);
+  };
+ 
   return (
     <div className="pt-6  relative">
       <div className="flex overflow-x-auto snap-x snap-mandatory w-full scrollbar-hide ">
         {playingMovie?.slice(0, 10).map((movie) => (
           <div
-            className=" w-full  h-full relative flex items-center p-36 shrink-0 snap-center  "
+            className=" w-full  h-full relative flex items-center p-36 shrink-0 snap-center rounded-lg "
             key={movie.id}
           >
             <img
@@ -106,13 +115,19 @@ export const Hero = () => {
             </div>
 
             <div className="flex absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-              <button className=" min-w-[8px] h-[8px] rounded-full bg-gray-600">
+              <button
+              onClick={handlePreviousButton}
+              className=" min-w-[8px] h-[8px] rounded-full bg-gray-600">
                 {" "}
               </button>
-              <button className="min-w-[8px] h-[8px] rounded-full  bg-gray-600">
+              <button 
+              onClick={handleNextButton}
+              className="min-w-[8px] h-[8px] rounded-full  bg-gray-600">
                 {" "}
               </button>
-              <button className="min-w-[8px] h-[8px] rounded-full  bg-gray-600">
+              <button
+              onClick={ ()=> handleNextButton}
+              className="min-w-[8px] h-[8px] rounded-full  bg-gray-600">
                 {" "}
               </button>
               <button className="min-w-[8px] h-[8px] rounded-full  bg-gray-600">
