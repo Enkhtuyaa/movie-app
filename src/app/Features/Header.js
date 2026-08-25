@@ -1,38 +1,48 @@
+"use client"
 import { Movie } from "../Icons/Movie";
 import { Moon } from "../Icons/Moon";
 import { Search } from "../Icons/Search";
 import { useRouter } from "next/navigation";
 import { Dropdown } from "../Icons/Dropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
-const GENRES = [
-  "Action",
-  "Comedy",
-  "Drama",
-  "Horror",
-  "Science-Fiction",
-  "Documentary",
-  "Animation",
-  "Crime",
-  "Family",
-  "Music",
-  "Fantasy",
-  "Romance",
-  "Adventure",
-  "History",
-  "Mystery",
-  "TV Movie",
-  "Thriller",
-  "War",
-  "Western",
-];
+const api_token =
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
+
 export const Header = () => {
+  const params = useParams();
+  const [genre, setGenre] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("Genre");
+  const [selectedGenre, setSelectedGenre] = useState("");
+
+  const getData = async () => {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/genre/movie/list?language=en`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    console.log(jsonData, "data");
+    return jsonData.genres;
+  };
+  useEffect(() => {
+    getData()
+      .then((data) => setGenre(data || []))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+  
   const router = useRouter();
   const navigateToHome = () => {
     router.push("/");
   };
+  
+
+
   return (
     <div>
       <div className="w-360 h-14.75 bg-white flex justify-center">
@@ -41,41 +51,63 @@ export const Header = () => {
             <Movie onClick={navigateToHome} /> Movie Z
           </div>
           <div className="flex justify-center items-center gap-3">
-            <div className="relative flex justify-center items-center">
-              <input
-                list="genre-options"
-                placeholder="Genre"
-                className="w-[120px] h-9 rounded-md text-black bg-white pl-8 pr-3 text-sm border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="relative ">
               <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full h-10 px-3 bg-white border border-gray-200 rounded-md text-sm text-black flex items-center justify-between shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1"
               >
-                <span>{selected}</span>
-                <span className="text-xs text-gray-400">▼</span>
-              </button>
-
-              {/* Нээгдэх жагсаалт - Энд өндөр, өргөнийг өөрийнхөөрөө заана */}
-              {isOpen && (
-                <ul className="absolute left-0 top-11 w-full bg-white border border-gray-200 rounded-md shadow-lg z-10 max-h-48 overflow-y-auto">
-                  {GENRES.map((genre) => (
-                    <li
-                      key={genre}
-                      onClick={() => {
-                        setSelected(genre);
-                        setIsOpen(false);
-                      }}
-                      /* Энд h-10 (өндөр), px-3 (өргөний зай) гэх мэт CSS өгнө */
-                      className="h-10 px-3 flex items-center text-sm hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition-colors"
-                    >
-                      {genre}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <span className="absolute left-2.5 text-xs text-gray-500">
+                <span className="truncate">{selectedGenre || "Genre"}</span>
                 <Dropdown />
-              </span>
+              </button>
+              {isOpen && (
+                <div className="absolute top-full left-0 mt-2 w-[577px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-5">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-gray-900">Genres</h3>
+                    <p className="text-sm text-gray-500">
+                      See lists of movies by genre
+                    </p>
+                  </div>
+
+                  <hr className="mb-4 border-gray-100" />
+
+                  {loading && (
+                    <div className="py-2 text-sm text-gray-400">Loading...</div>
+                  )}
+
+                  {errorMessage && (
+                    <div className="py-2 text-sm text-red-500">
+                      {errorMessage}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2">
+                    {genre.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => GenreDetailPage(item)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-semibold text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
+                      >
+                        <span>{item.name}</span>
+                        <svg
+                          className="w-3 h-3 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="relative flex justify-center items-center gap-10">
               <input
