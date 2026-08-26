@@ -50,7 +50,7 @@ export const Header = () => {
     <div>
       <div className="w-360 h-14.75 bg-white flex justify-center">
         <div className="w-7xl h-9 bg-white flex justify-between items-center">
-          <div className="flex gap-2 ">
+          <div className="flex gap-2 cursor-pointer">
             <Movie onClick={navigateToHome} /> Movie Z
           </div>
           <div className="flex justify-center items-center gap-3">
