@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Movie } from "../Icons/Movie";
 import { Moon } from "../Icons/Moon";
 import { Search } from "../Icons/Search";
@@ -35,13 +35,16 @@ export const Header = () => {
         setLoading(false);
       });
   }, []);
-  
+
   const router = useRouter();
   const navigateToHome = () => {
     router.push("/");
   };
-  
-
+ const navigateGenreDetailPage = (item) => {
+    setSelectedGenre(item.name);
+    setIsOpen(false); // Цонхыг хаана
+   router.push(`/genre/${item.id}`); // Жанрын ID-аар хуудас руу шилжинэ
+  };
 
   return (
     <div>
@@ -55,41 +58,37 @@ export const Header = () => {
               <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1"
+                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1 "
               >
-                <span className="truncate">{selectedGenre || "Genre"}</span>
+                <span className="truncate"> {selectedGenre || "Genre"}</span>
                 <Dropdown />
               </button>
               {isOpen && (
-                <div className="absolute top-full left-0 mt-2 w-[577px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-5">
+                <div className="absolute top-full left-0 mt-2 w-[577px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-5 ">
                   <div className="mb-4">
                     <h3 className="text-xl font-bold text-gray-900">Genres</h3>
                     <p className="text-sm text-gray-500">
                       See lists of movies by genre
                     </p>
                   </div>
-
-                  <hr className="mb-4 border-gray-100" />
-
+                  <hr className="mb-4 border-gray-200" />
                   {loading && (
                     <div className="py-2 text-sm text-gray-400">Loading...</div>
                   )}
-
                   {errorMessage && (
                     <div className="py-2 text-sm text-red-500">
                       {errorMessage}
                     </div>
                   )}
-
                   <div className="flex flex-wrap gap-2">
                     {genre.map((item) => (
                       <button
                         key={item.id}
                         type="button"
-                        onClick={() => GenreDetailPage(item)}
+                        onClick={() =>navigateGenreDetailPage (item)}
                         className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-semibold text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
                       >
-                        <span>{item.name}</span>
+                         <span>{item.name}</span>
                         <svg
                           className="w-3 h-3 text-gray-500"
                           fill="none"
