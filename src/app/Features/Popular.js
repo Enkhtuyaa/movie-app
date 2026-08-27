@@ -33,7 +33,7 @@ export const Popular = () => {
         setLoading(false);
       });
   }, []);
-  console.log(data, "this is my data");
+  // console.log(data, "this is my data");
   
   const router = useRouter();
   const navigateToPopularPage = () => {

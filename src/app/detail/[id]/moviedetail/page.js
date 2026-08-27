@@ -24,6 +24,7 @@ export default function MovieDetailPage() {
     console.log(jsonData, "data");
     return jsonData.results;
   };
+  
   useEffect(() => {
     getSimilar()
       .then((data) => setSimilarMovie(data || []))

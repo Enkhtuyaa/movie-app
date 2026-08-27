@@ -6,25 +6,31 @@ import { useRouter } from "next/navigation";
 import { Dropdown } from "../Icons/Dropdown";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import MovieDetailPage from "../detail/[id]/moviedetail/page";
 
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
 
 export const Header = () => {
   const params = useParams();
+  const router = useRouter();
+
   const [genre, setGenre] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState("");
 
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const getData = async () => {
     const response = await fetch(
       `https://api.themoviedb.org/3/genre/movie/list?language=en`,
-      { headers: { Authorization: `Bearer ${api_token}` } },
+      { headers: { Authorization: `Bearer ${api_token}` } }
     );
     const jsonData = await response.json();
-    // console.log(jsonData, "data");
     return jsonData.genres;
   };
 
@@ -37,7 +43,6 @@ export const Header = () => {
       });
   }, []);
 
-  const router = useRouter();
   const navigateToHome = () => {
     router.push("/");
   };
@@ -48,52 +53,58 @@ export const Header = () => {
     router.push(`/genre/${item.id}`);
   };
 
-  const [searchInputValue, setSearchInputValue] = useState("");
-  const [searchResults, setSearchResults] = useState([])
-
-  const getSearch = async () => {
-    // console.log("hello");
+  const getSearch = async (query) => {
+    if (!query.trim()) return [];
     const response = await fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${searchInputValue}&language=en-US&page=1`,
-      { headers: { Authorization: `Bearer ${api_token}` } },
+      `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&language=en-US&page=1`,
+      { headers: { Authorization: `Bearer ${api_token}` } }
     );
     const jsonData = await response.json();
-    console.log(jsonData, "data");
-    return jsonData.results;
+    return jsonData.results || [];
   };
 
   useEffect(() => {
-    getSearch()
-      .then((data) => setSearchResults(data))
-      .catch(() => setErrorMessage("MOVIE API ERROR"))
-      .finally(() => {
-        setLoading(false);
-      });
+    if (!searchInputValue.trim()) {
+      setSearchResults([]);
+      setIsSearchOpen(false);
+      return;
+    }
+
+    getSearch(searchInputValue)
+      .then((data) => {
+        setSearchResults(data);
+        setIsSearchOpen(true);
+      })
+      .catch(() => setErrorMessage("MOVIE API ERROR"));
   }, [searchInputValue]);
 
-  // console.log("data");
+  const handleMovieClick = (MovieDetailPage) => {
+    setIsSearchOpen(false);
+    setSearchInputValue("");
+    router.push(`/detail/${MovieDetailPage}`); // Киноны дэлгэрэнгүй хуудас руу шилжих
+  };
+
   return (
     <div>
-      <div
-        className="w-360 h
-      -14.75 bg-white flex justify-center"
-      >
-        <div className="w-7xl h-9 bg-white flex justify-between items-center">
-          <div className="flex gap-2 cursor-pointer">
-            <Movie onClick={navigateToHome} /> Movie Z
+      <div className="w-full h-16 bg-white flex justify-center items-center border-b border-gray-100">
+        <div className="w-7xl h-9 bg-white flex justify-between items-center px-4">
+          <div className="flex gap-2 cursor-pointer items-center font-bold text-lg" onClick={navigateToHome}>
+            <Movie /> Movie Z
           </div>
+          
           <div className="flex justify-center items-center gap-3">
-            <div className="relative ">
+            {/* Genre Dropdown */}
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1 cursor-pointer "
+                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1 cursor-pointer"
               >
-                <span className="truncate"> {selectedGenre || "Genre"}</span>
+                <span className="truncate">{selectedGenre || "Genre"}</span>
                 <Dropdown />
               </button>
               {isOpen && (
-                <div className="absolute top-full left-0 mt-2 w-[577px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-5 ">
+                <div className="absolute top-full left-0 mt-2 w-[577px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-5">
                   <div className="mb-4">
                     <h3 className="text-xl font-bold text-gray-900">Genres</h3>
                     <p className="text-sm text-gray-500">
@@ -137,19 +148,53 @@ export const Header = () => {
                 </div>
               )}
             </div>
-            <div className="relative flex justify-center items-center gap-10">
+
+            {/* Search Input and Search Results */}
+            <div className="relative flex items-center">
               <input
                 value={searchInputValue}
                 onChange={(e) => setSearchInputValue(e.target.value)}
                 placeholder="Search..."
-                className="w-[379px] h-[36px] rounded-lg pl-10 pr-3 shadow-sm focus:outline-none focus:ring-2  focus:ring-blue-500"
+                className="w-[379px] h-[36px] rounded-lg pl-10 pr-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span className="absolute left-2.5">
+              <span className="absolute left-2.5 text-gray-400">
                 <Search />
               </span>
+
+              {/* Search Dropdown Results */}
+              {isSearchOpen && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 mt-2 w-[379px] max-h-[400px] overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 divide-y divide-gray-100">
+                  {searchResults.slice(0, 6).map((movie) => (
+                    <div
+                      key={movie.id}
+                      onClick={() => handleMovieClick(movie.id)}
+                      className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      <img
+                        src={
+                          movie.poster_path
+                            ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
+                            : "https://via.placeholder.com/48x72?text=No+Image"
+                        }
+                        alt={movie.title}
+                        className="w-12 h-16 object-cover rounded"
+                      />
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-semibold text-gray-800 truncate">
+                          {movie.title}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {movie.release_date?.split("-")[0] || "N/A"} • ★ {movie.vote_average?.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          <span className="w-9 h-9 rounded-md flex justify-center items-center shadow-sm focus:outline-none focus:ring-2 ">
+
+          <span className="w-9 h-9 rounded-md flex justify-center items-center shadow-sm border border-gray-200 cursor-pointer">
             <Moon />
           </span>
         </div>
