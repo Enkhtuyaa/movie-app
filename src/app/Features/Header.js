@@ -24,9 +24,10 @@ export const Header = () => {
       { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
-    console.log(jsonData, "data");
+    // console.log(jsonData, "data");
     return jsonData.genres;
   };
+
   useEffect(() => {
     getData()
       .then((data) => setGenre(data || []))
@@ -40,15 +41,43 @@ export const Header = () => {
   const navigateToHome = () => {
     router.push("/");
   };
- const navigateGenreDetailPage = (item) => {
+
+  const navigateGenreDetailPage = (item) => {
     setSelectedGenre(item.name);
-    setIsOpen(false); // Цонхыг хаана
-   router.push(`/genre/${item.id}`); // Жанрын ID-аар хуудас руу шилжинэ
+    setIsOpen(false);
+    router.push(`/genre/${item.id}`);
   };
 
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [searchResults, setSearchResults] = useState([])
+
+  const getSearch = async () => {
+    // console.log("hello");
+    const response = await fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${searchInputValue}&language=en-US&page=1`,
+      { headers: { Authorization: `Bearer ${api_token}` } },
+    );
+    const jsonData = await response.json();
+    console.log(jsonData, "data");
+    return jsonData.results;
+  };
+
+  useEffect(() => {
+    getSearch()
+      .then((data) => setSearchResults(data))
+      .catch(() => setErrorMessage("MOVIE API ERROR"))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [searchInputValue]);
+
+  // console.log("data");
   return (
     <div>
-      <div className="w-360 h-14.75 bg-white flex justify-center">
+      <div
+        className="w-360 h
+      -14.75 bg-white flex justify-center"
+      >
         <div className="w-7xl h-9 bg-white flex justify-between items-center">
           <div className="flex gap-2 cursor-pointer">
             <Movie onClick={navigateToHome} /> Movie Z
@@ -58,7 +87,7 @@ export const Header = () => {
               <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1 "
+                className="w-[140px] h-9 rounded-md text-black bg-white px-3 text-sm border border-gray-200 shadow-sm focus:outline-none flex items-center justify-between gap-1 cursor-pointer "
               >
                 <span className="truncate"> {selectedGenre || "Genre"}</span>
                 <Dropdown />
@@ -85,10 +114,10 @@ export const Header = () => {
                       <button
                         key={item.id}
                         type="button"
-                        onClick={() =>navigateGenreDetailPage (item)}
+                        onClick={() => navigateGenreDetailPage(item)}
                         className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-full text-xs font-semibold text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
                       >
-                         <span>{item.name}</span>
+                        <span>{item.name}</span>
                         <svg
                           className="w-3 h-3 text-gray-500"
                           fill="none"
@@ -110,6 +139,8 @@ export const Header = () => {
             </div>
             <div className="relative flex justify-center items-center gap-10">
               <input
+                value={searchInputValue}
+                onChange={(e) => setSearchInputValue(e.target.value)}
                 placeholder="Search..."
                 className="w-[379px] h-[36px] rounded-lg pl-10 pr-3 shadow-sm focus:outline-none focus:ring-2  focus:ring-blue-500"
               />
