@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Dropdown } from "../Icons/Dropdown";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import MovieDetailPage from "../detail/[id]/moviedetail/page";
 
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
@@ -28,7 +27,7 @@ export const Header = () => {
   const getData = async () => {
     const response = await fetch(
       `https://api.themoviedb.org/3/genre/movie/list?language=en`,
-      { headers: { Authorization: `Bearer ${api_token}` } }
+      { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
     return jsonData.genres;
@@ -53,11 +52,27 @@ export const Header = () => {
     router.push(`/genre/${item.id}`);
   };
 
+  // Хайлтын /search/[id] эсвэл /search/[value] хуудас руу шилжүүлэх
+  const handleSearchSubmit = () => {
+    if (!searchInputValue.trim()) return;
+    const value = searchInputValue;
+    setSearchInputValue("");
+    setIsSearchOpen(false);
+    router.push(`/search/${encodeURIComponent(value)}`);
+  };
+
+  // Enter дарах үед хуудас руу шилжих
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
   const getSearch = async (query) => {
     if (!query.trim()) return [];
     const response = await fetch(
       `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&language=en-US&page=1`,
-      { headers: { Authorization: `Bearer ${api_token}` } }
+      { headers: { Authorization: `Bearer ${api_token}` } },
     );
     const jsonData = await response.json();
     return jsonData.results || [];
@@ -78,20 +93,23 @@ export const Header = () => {
       .catch(() => setErrorMessage("MOVIE API ERROR"));
   }, [searchInputValue]);
 
-  const handleMovieClick = (MovieDetailPage) => {
+  const handleMovieClick = (moviedetail) => {
     setIsSearchOpen(false);
     setSearchInputValue("");
-    router.push(`/detail/${MovieDetailPage}`); // Киноны дэлгэрэнгүй хуудас руу шилжих
+    router.push(`/detail/${moviedetail}`);
   };
 
   return (
     <div>
       <div className="w-full h-16 bg-white flex justify-center items-center border-b border-gray-100">
         <div className="w-7xl h-9 bg-white flex justify-between items-center px-4">
-          <div className="flex gap-2 cursor-pointer items-center font-bold text-lg" onClick={navigateToHome}>
+          <div
+            className="flex gap-2 cursor-pointer items-center font-bold text-lg"
+            onClick={navigateToHome}
+          >
             <Movie /> Movie Z
           </div>
-          
+
           <div className="flex justify-center items-center gap-3">
             {/* Genre Dropdown */}
             <div className="relative">
@@ -154,10 +172,14 @@ export const Header = () => {
               <input
                 value={searchInputValue}
                 onChange={(e) => setSearchInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Search..."
                 className="w-[379px] h-[36px] rounded-lg pl-10 pr-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span className="absolute left-2.5 text-gray-400">
+              <span 
+                className="absolute left-2.5 text-gray-400 cursor-pointer"
+                onClick={handleSearchSubmit}
+              >
                 <Search />
               </span>
 
@@ -184,7 +206,8 @@ export const Header = () => {
                           {movie.title}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {movie.release_date?.split("-")[0] || "N/A"} • ★ {movie.vote_average?.toFixed(1)}
+                          {movie.release_date?.split("-")[0] || "N/A"} • ★{" "}
+                          {movie.vote_average?.toFixed(1)}
                         </span>
                       </div>
                     </div>
