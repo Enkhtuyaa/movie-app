@@ -72,7 +72,7 @@ export const Hero = () => {
       <div className="flex overflow-x-auto snap-x snap-mandatory w-full scrollbar-hide ">
         {playingMovie?.slice(0, 10).map((movie) => (
           <div
-            className=" w-full  min-h-full relative flex items-center p-36 shrink-0 snap-center  "
+            className=" w-full  h-full object-cover relative flex items-center p-36 shrink-0 snap-center  "
             key={movie.id}
           >
             <img

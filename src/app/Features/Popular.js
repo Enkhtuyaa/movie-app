@@ -6,6 +6,7 @@ import { Star } from "../Icons/Star";
 import { ChevronLeft } from "../Icons/ChevronLeft";
 import { ChevronRight } from "../Icons/ChevronRight";
 import { usePathname, useRouter } from "next/navigation";
+import { PopularSkeleton } from "./PopularSkeleton.js/page";
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
 
@@ -42,6 +43,9 @@ export const Popular = () => {
   const handleMovieClick = (id) => {
     router.push(`/detail/${id}`);
   };
+  if (loading) {
+    return <PopularSkeleton/>
+  }
   return (
     <div>
       <div className="   flex p-12  flex-col ">
