@@ -176,7 +176,7 @@ export const Header = () => {
                 placeholder="Search..."
                 className="w-[379px] h-[36px] rounded-lg pl-10 pr-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <span 
+              <span
                 className="absolute left-2.5 text-gray-400 cursor-pointer"
                 onClick={handleSearchSubmit}
               >

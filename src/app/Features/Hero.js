@@ -2,7 +2,7 @@ import { Star } from "../Icons/Star";
 import { Vector } from "../Icons/Vector";
 import { ChevronRight } from "../Icons/ChevronRight";
 import { useEffect, useState } from "react";
-
+import HeroSkeleton from "./HeroSkeleton.js/page";
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
 
@@ -46,6 +46,7 @@ export const Hero = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     getData()
       .then((movie) => setPlayingMovie(movie))
       .catch(() => setErrorMessage("MOVIE API ERROR"))
@@ -61,6 +62,10 @@ export const Hero = () => {
   const handleNextButton = () => {
     setSelectedPage(selectedPage + 1);
   };
+
+  if (loading) {
+    return <HeroSkeleton />;
+  }
  
   return (
     <div className="pt-6  relative">

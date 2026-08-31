@@ -6,6 +6,7 @@ import { Star } from "../Icons/Star";
 import { ChevronLeft } from "../Icons/ChevronLeft";
 import { ChevronRight } from "../Icons/ChevronRight";
 import { usePathname, useRouter } from "next/navigation";
+import { UpcomingSkeleton } from "./UpcomingSkeleton.js/page";
 
 const api_token =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MDEwMzE0NzE4YjI2NGE3MWRiYTQ4MGQ0MWUwOGMwOCIsIm5iZiI6MTc4NjU4NTAxNy44MjgsInN1YiI6IjZhN2QxZmI5Y2Q5ZWRlYTg4ODUxNzljNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ph3bZTAcyGoN3fxAVOoUG3O5Rt4W2pf9l_ieHp8nAMY";
@@ -47,6 +48,10 @@ export const Upcoming = () => {
     // console.log(id,"movieid");
   };
 
+  if (loading) {
+    return <UpcomingSkeleton />;
+  } 
+  
   return (
     <div>
       <div className="   flex p-12  flex-col ">
